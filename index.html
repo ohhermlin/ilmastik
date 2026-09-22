@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Puhas ja selge ilmaülevaade sinu asukohale.">
+  <title>Ilmavaade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href=".">ILM<span>AVADE</span></a>
+      <div class="topbar-meta"><span class="status-dot"></span><span id="updated-label">Andmed laadimisel</span></div>
+      <button class="icon-button" id="locate-button" type="button" aria-label="Kasuta minu asukohta" title="Kasuta minu asukohta">⌖</button>
+    </header>
+
+    <section class="intro">
+      <div>
+        <p class="eyebrow">Tänane taevas</p>
+        <h1>Ilm, mis aitab<br><em>päeva sättida.</em></h1>
+      </div>
+      <form class="search" id="search-form">
+        <label class="sr-only" for="city-input">Otsi linna</label>
+        <input id="city-input" type="search" placeholder="Otsi linna..." value="Tallinn" autocomplete="off">
+        <button type="submit" aria-label="Otsi ilma">→</button>
+      </form>
+    </section>
+
+    <section class="weather-board" aria-live="polite">
+      <div class="current-weather">
+        <div class="weather-copy">
+          <p class="location-label"><span class="pin">●</span><span id="location-name">Tallinn, Eesti</span></p>
+          <div class="temperature"><span id="current-temperature">--</span><sup>°</sup></div>
+          <p class="condition" id="current-condition">Ilma laadimine...</p>
+          <p class="feels">Tundub nagu <strong id="feels-like">--</strong>°</p>
+        </div>
+        <div class="weather-illustration" id="current-icon" aria-label="Ilma sümbol">☼</div>
+      </div>
+      <div class="quick-stats">
+        <div class="stat"><span class="stat-icon">♧</span><div><small>Õhuniiskus</small><strong id="humidity">--%</strong></div></div>
+        <div class="stat"><span class="stat-icon">≋</span><div><small>Tuul</small><strong id="wind">-- km/h</strong></div></div>
+        <div class="stat"><span class="stat-icon">◒</span><div><small>Nähtavus</small><strong id="visibility">Hea</strong></div></div>
+      </div>
+    </section>
+
+    <section class="forecast-section">
+      <div class="section-heading"><div><p class="eyebrow">Järgmised päevad</p><h2>7 päeva prognoos</h2></div><span class="unit-label">°C</span></div>
+      <div class="forecast-grid" id="forecast-grid"></div>
+    </section>
+
+    <footer><span>Andmed: Open-Meteo</span><span id="coordinates">59.44° N · 24.75° E</span></footer>
+    <div class="toast" id="toast" role="status"></div>
+  </main>
+</body>
+</html>
