@@ -36,7 +36,7 @@ jobs:
 
           ssh-keyscan -H "$SFTP_SERVER" >> ~/.ssh/known_hosts
           remote="$SFTP_USERNAME@$SFTP_SERVER"
-          deploy_path=/data01/virt150869/domeenid/www.oliverhermlin.eu/htdocs
+          deploy_path=/data01/data01/virt150869/domeenid/www.oliverhermlin.eu/htdocs/
 
           ssh "$remote" 'command -v rsync >/dev/null || { echo "rsync is not installed on the server" >&2; exit 127; }'
           ssh "$remote" "mkdir -p '$deploy_path'"
