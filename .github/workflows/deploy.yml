@@ -8,23 +8,26 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install lftp
-        run: sudo apt-get install -y lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
 
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SFTP_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          printf '%s\n' '${{ secrets.SFTP_PRIVATE_KEY }}' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
 
       - name: Deploy via SFTP
         run: |
-          lftp -u ${{ secrets.SFTP_USERNAME }}, sftp://${{ secrets.SFTP_SERVER }} <<'EOF'
+          lftp -u "${{ secrets.SFTP_USERNAME }}," "sftp://${{ secrets.SFTP_SERVER }}" <<'EOF'
           set sftp:connect-program "ssh -a -x -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key"
           set net:max-retries 3
-          mirror --reverse --delete --exclude-glob .git* --exclude-glob .github* . /data01/virt119213/domeenid/www.sinudomeem.tld/alamkaustanimi
+          set net:timeout 20
+          mirror --reverse --exclude-glob .git* --exclude-glob .github* ./ /htdocs/
           bye
           EOF
