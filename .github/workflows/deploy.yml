@@ -1,27 +1,29 @@
 name: Deploy to Zone
 
-on: push: branches: - main
+on:
+  push:
+    branches:
+      - main
 
-jobs: deploy: runs-on: ubuntu-latest
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-```
-steps:  
-  - name: Checkout repository  
-    uses: actions/checkout@v4  
-  
-  - name: Setup SSH key  
-    run: |  
-      mkdir -p ~/.ssh  
-      echo "$\{\{ secrets.ZONE\_SSH\_KEY \}\}" \> ~/.ssh/id\_ed25519  
-      chmod 600 ~/.ssh/id\_ed25519  
-      ssh-keyscan -p 22 "$\{\{ secrets.ZONE\_HOST \}\}" \>\> ~/.ssh/known\_hosts  
-  
-  - name: Deploy files to Zone  
-    run: |  
-      rsync -avz --delete \\  
-        --exclude=".git/" \\  
-        --exclude=".github/" \\  
-        -e "ssh -p 22" \\  
-        ./ "$\{\{ secrets.ZONE\_USERNAME \}\}@$\{\{ secrets.ZONE\_HOST \}\}:~/"
-```
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ZONE_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p 22 "${{ secrets.ZONE_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy files to Zone
+        run: |
+          rsync -avz --delete \
+            --exclude=".git/" \
+            --exclude=".github/" \
+            -e "ssh -p 22" \
+            ./ "${{ secrets.ZONE_USERNAME }}@${{ secrets.ZONE_HOST }}:~/htdocs/"
