@@ -1,4 +1,4 @@
-name: Deploy to Zone
+name: Deploy to Zone Media
 
 on:
   push:
@@ -8,22 +8,23 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
 
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.ZONE_SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p 22 "${{ secrets.ZONE_HOST }}" >> ~/.ssh/known_hosts
+          echo "${{ secrets.SFTP_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
 
-      - name: Deploy files to Zone
+      - name: Deploy via SFTP
         run: |
-          rsync -avz --delete \
-            --exclude=".git/" \
-            --exclude=".github/" \
-            -e "ssh -p 22" \
-            ./ "${{ secrets.ZONE_USERNAME }}@${{ secrets.ZONE_HOST }}:~/htdocs/"
+          lftp -u ${{ secrets.SFTP_USERNAME }}, sftp://${{ secrets.SFTP_SERVER }} <<'EOF'
+          set sftp:connect-program "ssh -a -x -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key"
+          set net:max-retries 3
+          mirror --reverse --delete --exclude-glob .git* --exclude-glob .github* . /data01/virt119213/domeenid/www.sinudomeem.tld/alamkaustanimi
+          bye
+          EOF
