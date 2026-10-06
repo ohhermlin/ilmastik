@@ -1,57 +1,27 @@
+name: Deploy to Zone
+
+on: push: branches: - main
+
+jobs: deploy: runs-on: ubuntu-latest
+
 ```
-`name: Deploy to Zone Media`
-
-
-`on:`
-
-`  push:`
-
-`    branches:`
-
-`      - main`
-
-
-`jobs:`
-
-`  deploy:`
-
-`    runs-on: ubuntu-latest`
-
-`    steps:`
-
-`      - uses: actions/checkout@v4`
-
-
-`      - name: Install lftp`
-
-`        run: sudo apt-get install -y lftp`
-
-
-`      - name: Setup SSH key`
-
-`        run: |`
-
-`          mkdir -p ~/.ssh`
-
-`          echo "$\{\{ secrets.SFTP\_PRIVATE\_KEY \}\}" \> ~/.ssh/deploy\_key`
-
-`          chmod 600 ~/.ssh/deploy\_key`
-
-
-`      - name: Deploy via SFTP`
-
-`        run: |`
-
-`          lftp -u $\{\{ secrets.SFTP\_USERNAME \}\}, sftp://$\{\{ secrets.SFTP\_SERVER \}\} \<\<'EOF'`
-
-`          set sftp:connect-program "ssh -a -x -o StrictHostKeyChecking=no -i ~/.ssh/deploy\_key"`
-
-`          set net:max-retries 3`
-
-`          mirror --reverse --delete --exclude-glob .git\* --exclude-glob .github\* . /data01/virt119213/domeenid/[www.sinudomeem.tld/alamkaustanimi`](http://www.sinudomeem.tld/alamkaustanimi)
-
-`          bye`
-
-`          EOF`
+steps:  
+  - name: Checkout repository  
+    uses: actions/checkout@v4  
+  
+  - name: Setup SSH key  
+    run: |  
+      mkdir -p ~/.ssh  
+      echo "$\{\{ secrets.ZONE\_SSH\_KEY \}\}" \> ~/.ssh/id\_ed25519  
+      chmod 600 ~/.ssh/id\_ed25519  
+      ssh-keyscan -p 22 "$\{\{ secrets.ZONE\_HOST \}\}" \>\> ~/.ssh/known\_hosts  
+  
+  - name: Deploy files to Zone  
+    run: |  
+      rsync -avz --delete \\  
+        --exclude=".git/" \\  
+        --exclude=".github/" \\  
+        -e "ssh -p 22" \\  
+        ./ "$\{\{ secrets.ZONE\_USERNAME \}\}@$\{\{ secrets.ZONE\_HOST \}\}:~/"
 ```
 
