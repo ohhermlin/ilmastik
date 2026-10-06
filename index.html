@@ -3,58 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Puhas ja selge ilmaülevaade sinu asukohale.">
-  <title>Ilmavaade</title>
+  <meta name="theme-color" content="#f4f6f1">
+  <meta name="description" content="ÕppeKoormuse Juht aitab koolitöid planeerida ja õppimiskoormust tasakaalus hoida.">
+  <title>KooliPlanner — Õppekoormuse juht</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
 </head>
 <body>
-  <main class="shell">
-    <header class="topbar">
-      <a class="brand" href=".">ILM<span>AVADE</span></a>
-      <div class="topbar-meta"><span class="status-dot"></span><span id="updated-label">Andmed laadimisel</span></div>
-      <button class="icon-button" id="locate-button" type="button" aria-label="Kasuta minu asukohta" title="Kasuta minu asukohta">⌖</button>
-    </header>
-
-    <section class="intro">
-      <div>
-        <p class="eyebrow">Tänane taevas</p>
-        <h1>Ilm, mis aitab<br><em>päeva sättida.</em></h1>
-      </div>
-      <form class="search" id="search-form">
-        <label class="sr-only" for="city-input">Otsi linna</label>
-        <input id="city-input" type="search" placeholder="Otsi linna..." value="Taaaaallinn" autocomplete="off">
-        <button type="submit" aria-label="Otsi ilma">→</button>
-      </form>
+  <main class="app-shell">
+    <header class="topbar"><a class="brand" href="#top"><span class="brand-mark">k.</span><span>Kooli<span class="brand-light">Planner</span></span></a><div class="topbar-right"><span class="save-state"><span class="live-dot"></span>Salvestub selles seadmes</span><span class="avatar" aria-hidden="true">Õ</span></div></header>
+    <section class="welcome" id="top"><div><p class="eyebrow" id="today-date">SINU ÕPPENÄDAL</p><h1>Võta õppimine<br><span>enda kontrolli alla.</span></h1><p class="welcome-copy">Väiksemad sammud. Rahulikult tehtud koolitööd.</p></div><div class="welcome-note"><span class="note-spark" aria-hidden="true">✳</span><p>Hea plaan jätab ruumi<br><strong>ka hingetõmbepausiks.</strong></p></div></section>
+    <section class="stats-grid" aria-label="Õppimise kokkuvõte">
+      <article class="stat-card stat-open"><span class="stat-label">TEGEMATA TÖÖD</span><div class="stat-value" id="stat-open">0</div><span class="stat-foot">ootavad sinu tähelepanu</span><span class="stat-glyph" aria-hidden="true">↗</span></article>
+      <article class="stat-card stat-hours"><span class="stat-label">SEL NÄDALAL</span><div class="stat-value"><span id="stat-hours">0</span><small> h</small></div><span class="stat-foot">planeeritud õppeaega</span><span class="stat-glyph" aria-hidden="true">◷</span></article>
+      <article class="stat-card stat-progress"><span class="stat-label">TEHTUD TÖÖD</span><div class="stat-value"><span id="stat-done">0</span><small> / <span id="stat-total">0</span></small></div><span class="stat-foot">tubli töö, samm korraga</span><span class="stat-glyph" aria-hidden="true">✓</span></article>
     </section>
-
-    <section class="weather-board" aria-live="polite">
-      <div class="current-weather">
-        <div class="weather-copy">
-          <p class="location-label"><span class="pin">●</span><span id="location-name">Tallinn, Eesti</span></p>
-          <div class="temperature"><span id="current-temperature">--</span><sup>°</sup></div>
-          <p class="condition" id="current-condition">Ilma laadimine...</p>
-          <p class="feels">Tundub nagu <strong id="feels-like">--</strong>°</p>
-        </div>
-        <div class="weather-illustration" id="current-icon" aria-label="Ilma sümbol">☼</div>
+    <div class="content-grid">
+      <div class="main-column">
+        <section class="panel load-panel" aria-labelledby="load-title"><div class="section-heading"><div><p class="eyebrow">PILK ETTE</p><h2 id="load-title">Sinu nädal</h2></div><span class="heading-note"><span class="legend-dot"></span> Õppekoormuse skoor</span></div><div class="week-grid" id="week-grid" aria-live="polite"></div><p class="load-caption"><span class="load-key key-light"></span>Kerge <span class="load-key key-mid"></span>Mõõdukas <span class="load-key key-heavy"></span>Kriitiline koormus</p></section>
+        <section class="panel tasks-panel" aria-labelledby="tasks-title"><div class="section-heading task-heading"><div><p class="eyebrow">KÕIK KIRJAS</p><h2 id="tasks-title">Minu ülesanded <span class="count-pill" id="task-count">0</span></h2></div></div><div class="task-toolbar"><div class="filter-tabs" role="group" aria-label="Filtreeri ülesandeid"><button class="filter-tab active" type="button" data-filter="all">Kõik</button><button class="filter-tab" type="button" data-filter="open">Tegemata</button><button class="filter-tab" type="button" data-filter="done">Tehtud</button></div><label class="sr-only" for="subject-filter">Otsi aine või ülesande järgi</label><input class="search-input" id="subject-filter" type="search" placeholder="Otsi ülesannet..." autocomplete="off"></div><div class="task-list" id="task-list" aria-live="polite"></div><div class="empty-state" id="empty-state" hidden><span class="empty-icon" aria-hidden="true">✳</span><strong id="empty-title">Kõik on kontrolli all.</strong><p id="empty-copy">Lisa esimene ülesanne ja teeme plaani valmis.</p></div></section>
       </div>
-      <div class="quick-stats">
-        <div class="stat"><span class="stat-icon">♧</span><div><small>Õhuniiskus</small><strong id="humidity">--%</strong></div></div>
-        <div class="stat"><span class="stat-icon">≋</span><div><small>Tuul</small><strong id="wind">-- km/h</strong></div></div>
-        <div class="stat"><span class="stat-icon">◒</span><div><small>Nähtavus</small><strong id="visibility">Hea</strong></div></div>
-      </div>
-    </section>
-
-    <section class="forecast-section">
-      <div class="section-heading"><div><p class="eyebrow">Järgmised päevad</p><h2>7 päeva prognoos</h2></div><span class="unit-label">°C</span></div>
-      <div class="forecast-grid" id="forecast-grid"></div>
-    </section>
-
-    <footer><span>Andmed: Open-Meteo</span><span id="coordinates">59.44° N · 24.75° E</span></footer>
-    <div class="toast" id="toast" role="status"></div>
+      <aside class="side-column">
+        <section class="focus-panel" aria-labelledby="focus-title"><div class="focus-heading"><div><p class="eyebrow">ÜKS SAMM KORRAGA</p><h2 id="focus-title">Tänane fookus</h2></div><span class="focus-sun" aria-hidden="true">✳</span></div><p class="focus-date" id="focus-date"></p><div class="focus-list" id="focus-list"></div><a class="focus-link" href="#tasks-title">Vaata kõiki ülesandeid <span aria-hidden="true">↘</span></a></section>
+        <section class="timer-panel" aria-labelledby="timer-title"><div class="timer-top"><div><p class="eyebrow">FOOKUSREŽIIM</p><h2 id="timer-title">Pomodoro</h2></div><span class="timer-mode" id="timer-mode">ÕPPIMINE</span></div><div class="timer-display" id="timer-display" role="timer" aria-live="off">25:00</div><div class="timer-track"><span id="timer-progress"></span></div><div class="timer-controls"><button class="timer-start" id="timer-toggle" type="button"><span aria-hidden="true">▶</span> Alusta fookust</button><button class="timer-reset" id="timer-reset" type="button" aria-label="Lähtesta taimer" title="Lähtesta taimer">↺</button></div><p class="timer-hint" id="timer-hint">25 min õppimist · 5 min pausi</p></section>
+        <section class="panel form-panel" aria-labelledby="form-title"><div class="section-heading form-heading"><div><p class="eyebrow">LISA PLAANI</p><h2 id="form-title">Uus ülesanne</h2></div><span class="form-plus" aria-hidden="true">＋</span></div><form id="task-form"><label class="field-label" for="subject">Aine nimi</label><input class="form-control" id="subject" name="subject" type="text" maxlength="60" placeholder="nt Bioloogia" required><label class="field-label" for="task-name">Ülesande kirjeldus</label><input class="form-control" id="task-name" name="title" type="text" maxlength="100" placeholder="nt Tööleht lk 42" required><div class="form-row"><div><label class="field-label" for="task-type">Tüüp</label><select class="form-control" id="task-type" name="type"><option>Kodutöö</option><option>Kontrolltöö</option><option>Projekt</option><option>Esitlus</option></select></div><div><label class="field-label" for="due-date">Tähtaeg</label><input class="form-control" id="due-date" name="dueDate" type="date" required></div></div><div class="form-row"><div><label class="field-label" for="hours">Ajakulu (h)</label><input class="form-control" id="hours" name="hours" type="number" min="0.25" max="100" step="0.25" value="1" required></div><div><label class="field-label" for="difficulty">Raskusaste</label><select class="form-control" id="difficulty" name="difficulty"><option value="1">1 · Kerge</option><option value="2">2 · Jõukohane</option><option value="3" selected>3 · Keskmine</option><option value="4">4 · Raske</option><option value="5">5 · Väga raske</option></select></div></div><button class="add-task-button" type="submit"><span aria-hidden="true">＋</span> Lisa ülesanne</button></form></section>
+      </aside>
+    </div>
+    <footer class="app-footer"><span>KooliPlanner <span class="footer-dot">·</span> Õppimine omas tempos.</span><span>Andmed jäävad sinu seadmesse</span></footer><div class="toast" id="toast" role="status" aria-live="polite"></div>
   </main>
 </body>
 </html>

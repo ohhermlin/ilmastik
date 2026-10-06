@@ -1,54 +1,57 @@
-name: Deploy weather dashboard
+```
+`name: Deploy to Zone Media`
 
-on:
-  push:
-    branches: [master, main]
-  workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+`on:`
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
+`  push:`
 
-jobs:
-  validate:
-    name: Validate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+`    branches:`
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
+`      - main`
 
-      - name: Check JavaScript syntax
-        run: node --check app.js
 
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: validate
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+`jobs:`
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+`  deploy:`
 
-      - name: Upload site artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
+`    runs-on: ubuntu-latest`
 
-      - name: Deploy site
-        id: deployment
-        uses: actions/deploy-pages@v4
+`    steps:`
+
+`      - uses: actions/checkout@v4`
+
+
+`      - name: Install lftp`
+
+`        run: sudo apt-get install -y lftp`
+
+
+`      - name: Setup SSH key`
+
+`        run: |`
+
+`          mkdir -p ~/.ssh`
+
+`          echo "$\{\{ secrets.SFTP\_PRIVATE\_KEY \}\}" \> ~/.ssh/deploy\_key`
+
+`          chmod 600 ~/.ssh/deploy\_key`
+
+
+`      - name: Deploy via SFTP`
+
+`        run: |`
+
+`          lftp -u $\{\{ secrets.SFTP\_USERNAME \}\}, sftp://$\{\{ secrets.SFTP\_SERVER \}\} \<\<'EOF'`
+
+`          set sftp:connect-program "ssh -a -x -o StrictHostKeyChecking=no -i ~/.ssh/deploy\_key"`
+
+`          set net:max-retries 3`
+
+`          mirror --reverse --delete --exclude-glob .git\* --exclude-glob .github\* . /data01/virt119213/domeenid/[www.sinudomeem.tld/alamkaustanimi`](http://www.sinudomeem.tld/alamkaustanimi)
+
+`          bye`
+
+`          EOF`
+```
+
