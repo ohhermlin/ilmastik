@@ -133,7 +133,7 @@ function renderTasks() {
   }).sort((first, second) => first.completed - second.completed || first.dueDate.localeCompare(second.dueDate));
   elements.list.innerHTML = items.map((task) => {
     const overdue = !task.completed && task.dueDate < today;
-    const smartSplit = !task.completed && !task.isSplit && Number(task.hours) >= 2 && task.dueDate > today;
+    const smartSplit = !task.completed && !task.isSplit && !task.parentId && Number(task.hours) >= 2 && task.dueDate > today;
     const subtitle = task.parentId ? `${task.subject} · etapp ${Number(task.stepIndex)} / ${Number(task.stepCount)}` : `${task.subject} · raskus ${Number(task.difficulty || 1)}/5`;
     const dueText = task.dueDate === today ? "Täna" : readableDate(task.dueDate);
     return `<article class="task-row ${task.completed ? "is-done" : ""}"><button class="complete-button" type="button" data-action="toggle" data-id="${escapeHtml(task.id)}" aria-label="${task.completed ? "Märgi tegemata" : "Märgi tehtuks"}: ${escapeHtml(task.title)}" aria-pressed="${task.completed}">${task.completed ? "✓" : ""}</button><div class="task-main"><div class="task-title-line"><span class="task-title">${escapeHtml(task.title)}</span><span class="type-tag ${typeClass(task.type)}">${escapeHtml(task.type)}</span></div><span class="task-subtitle">${escapeHtml(subtitle)}</span></div><div class="task-actions">${smartSplit ? `<button class="split-button" type="button" data-action="split" data-id="${escapeHtml(task.id)}" title="Jaga ülesanne väikesteks etappideks">Jaga sammudeks</button>` : ""}<span class="task-meta"><span class="task-date ${overdue ? "overdue" : ""}">${overdue ? "Üle tähtaja" : dueText}</span><span>${Number(task.hours).toLocaleString("et-EE")} h</span></span><button class="delete-button" type="button" data-action="delete" data-id="${escapeHtml(task.id)}" aria-label="Kustuta ülesanne: ${escapeHtml(task.title)}" title="Kustuta ülesanne">×</button></div></article>`;
@@ -185,13 +185,15 @@ function splitTask(task) {
   const availableDays = Math.max(1, Math.floor((dateFromString(task.dueDate) - dateFromString(today)) / DAY_MS) + 1);
   const stepCount = Math.min(8, Math.max(2, Math.ceil(Number(task.hours) / 1.25)), availableDays);
   if (stepCount < 2) return showToast("Sammud vajavad vähemalt kahte päeva enne tähtaega.");
-  const hoursPerStep = Number((Number(task.hours) / stepCount).toFixed(2));
   const steps = Array.from({ length: stepCount }, (_, index) => {
     const offset = Math.round(index * (availableDays - 1) / (stepCount - 1));
+    const hours = index === stepCount - 1
+      ? Number((Number(task.hours) - Number((Number(task.hours) / stepCount).toFixed(2)) * (stepCount - 1)).toFixed(2))
+      : Number((Number(task.hours) / stepCount).toFixed(2));
     return {
       id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${index}-${Math.random().toString(16).slice(2)}`,
       parentId: task.id, subject: task.subject, title: `${task.title} · etapp ${index + 1}/${stepCount}`,
-      type: task.type, dueDate: addDays(today, offset), hours: hoursPerStep, difficulty: task.difficulty,
+      type: task.type, dueDate: addDays(today, offset), hours, difficulty: task.difficulty,
       completed: false, stepIndex: index + 1, stepCount, createdAt: Date.now()
     };
   });
